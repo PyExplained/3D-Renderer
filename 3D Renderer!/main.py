@@ -34,7 +34,7 @@ for x in range(size):
 # p = Plate([(4, -1, 4), (6, 1, 4), (6, -1, 4)], texture=None, fill='red', smart_coords=False, orientation=1)
 # Plate([(-1, -1, 4), (1, 1, 4)], texture=None, fill='blue', smart_coords=True, orientation=1)
 # Plate([(-5, -5, 10), (5, 5, 10)],
-#       texture=r'C:\Users\manud\OneDrive\Bureaublad\test_img.jpg', resolution=0.035,
+#       texture=r'img_path', resolution=0.035,
 #       fill=None, smart_coords=True, orientation=1)
 # Cube(5, 2, 5, size=1, fill=['red', 'black', 'green', 'blue', 'purple', 'yellow'])
 c = Cuboid(10, 0, 0, 11, 1, 5, fill=['red', 'black', 'green', 'blue', 'purple', 'yellow'], x_angle=90)
