@@ -192,7 +192,7 @@ class Plate:
     def move(self, x, y, z):
         for i, p in enumerate(self.co):
             self.co[i] = tuple(np.array([x, y, z]) + np.array(self.co[i]))
-        rn.reshare = True
+        rn.app.reshare = True
 
     def rotate(self, x_angle, y_angle, z_angle, center, *rot):
         if rot:
@@ -214,7 +214,7 @@ class Plate:
             self.co[i] = tuple(rotate(p, self.xrot, self.yrot, self.zrot, center=np.array([center[0],
                                                                                            -center[1],
                                                                                            center[2]])))
-        rn.reshare = True
+        rn.app.reshare = True
 
     def find_intersection(self, rayDirection, rayPoint, max_distance, record_distance, _):
         point = linePlaneIntersection(self.planeNormal, self.co[0], rayDirection, rayPoint)

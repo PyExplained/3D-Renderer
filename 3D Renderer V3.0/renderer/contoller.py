@@ -21,15 +21,15 @@ class Controller:
 
     def check_events(self):
         # Check for 'player'-input
-        if not rn.pause:
+        if not rn.app.pause:
             for item in self.keys.items():
                 if item[1][3] == 'bind':
                     if item[0] == 'mouse_x':
-                        xx = (rn.px - mouse.position[0]) * item[1][2]
+                        xx = (rn.app.px - mouse.position[0]) * item[1][2]
                         item[1][0] = True
                         item[1][4] = xx
                     elif item[0] == 'mouse_y':
-                        yy = (rn.py - mouse.position[1]) * item[1][2]
+                        yy = (rn.app.py - mouse.position[1]) * item[1][2]
                         item[1][0] = True
                         item[1][4] = yy
                     else:
@@ -75,8 +75,6 @@ class Controller:
 
 
     def on_press(self, key):
-        global forward, left, backwards, right, reset, y_pos, y_neg, pause, mouse, px, py
-
         if type(key) != str:
             key = str(key)
 
@@ -94,20 +92,18 @@ class Controller:
                         self.keys[item[0]][0] = True
 
         if key == self.reset_key:
-            rn.reset = True
+            rn.app.reset = True
 
         if key == self.pause_key:
-            if rn.pause:
-                rn.pause = False
-                if rn.mouse_reset_pos_:
-                    mouse.position = rn.mouse_reset_pos_
-                    px, py = rn.mouse_reset_pos_
+            if rn.app.pause:
+                rn.app.pause = False
+                if rn.app.mouse_reset_pos_:
+                    mouse.position = rn.app.mouse_reset_pos_
+                    rn.app.px, rn.app.py = rn.app.mouse_reset_pos_
             else:
-                rn.pause = True
+                rn.app.pause = True
 
     def on_release(self, key):
-        global forward, left, backwards, right, reset, y_pos, y_neg
-
         if type(key) != str:
             key = str(key)
 
@@ -120,7 +116,7 @@ class Controller:
                     self.keys[item[0]][0] = False
 
         if key == self.reset_key:
-            rn.reset = False
+            rn.app.reset = False
 
         if key == self.pause_key:
             y_pos = False

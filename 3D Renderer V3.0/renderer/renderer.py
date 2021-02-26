@@ -12,9 +12,26 @@ try:
 except ImportError:
     warnings.warn("Unable to import cv2")
 
-sleep_time_ = 0.01  # If your computer is slow, make the sleep_time lower.
-#                     If your computer is fast, make the sleep_time higher.
-fov_ = 500
+
+class App:
+    def __init__(self):
+        self.fov_ = 500
+        self.sleep_time_ = 0.01  # If your computer is slow, make the sleep_time lower.
+        #                     If your computer is fast, make the sleep_time higher.
+
+        self.l_fps = 0
+        self.fps = 0
+        self.last_time = time.time()
+        self.start = True
+        self.reshare = False
+        self.cam_rot = False
+
+        self.mouse_reset_pos_ = (950, 540)
+        self.pause_text_ = 'Renderer Paused'
+        self.pause_color_ = 'gray10'
+
+        self.pause = False
+        self.reset = False
 
 
 def rotate(point, xrot, yrot, zrot, center=np.array([0, 0, 0]), td=False):
@@ -23,7 +40,7 @@ def rotate(point, xrot, yrot, zrot, center=np.array([0, 0, 0]), td=False):
     pos = np.matmul(pos, zrot) + center
 
     if td:
-        z = fov_ / pos[2]
+        z = app.fov_ / pos[2]
         persp = np.array([[z, 0, 0], [0, z, 0]])
         res = np.matmul(persp, pos)
 
@@ -130,18 +147,16 @@ def calculate(camera, point, width, height):
 
 
 def give_fps():
-    print(l_fps)
+    print(app.l_fps)
 
 
 def set_variable(sleep_time=0.01, fov=500, pause_color='gray10', pause_text='Renderer Paused',
                  mouse_reset_pos=(950, 540)):
-    global sleep_time_, fov_, pause_color_, pause_text_, mouse_reset_pos_
-
-    sleep_time_ = sleep_time
-    fov_ = fov
-    pause_color_ = pause_color
-    pause_text_ = pause_text
-    mouse_reset_pos_ = mouse_reset_pos
+    app.sleep_time_ = sleep_time
+    app.fov_ = fov
+    app.pause_color_ = pause_color
+    app.pause_text_ = pause_text
+    app.mouse_reset_pos_ = mouse_reset_pos
 
 
 def change_background_color(winname, color):
@@ -173,18 +188,15 @@ def freeze_update(infinite=False):
 
 def mainloop(rayTrace=False, camera=None, output=None, preview_mode='SCANNER', update_frequency_in_pixels=100,
              max_bounces=0, resize=True, add_RGB=1):
-    global last_time, px, py, fps, l_fps, xrot, yrot, zrot, forward, left, backwards, right, reset, y_pos, y_neg, pause, \
-        mouse, start, reshare, cam_rot, pause_text_, pause_color_, mouse_reset_pos_
-
     # fps
-    if time.time() - last_time >= 1:
-        l_fps = fps
-        fps = 0
-        last_time = time.time()
+    if time.time() - app.last_time >= 1:
+        app.l_fps = app.fps
+        app.fps = 0
+        app.last_time = time.time()
 
     # Test for reset
-    if not pause:
-        if reset:
+    if not app.pause:
+        if app.reset:
             for c in rend_info['CAMERAS']:
                 c.reset()
 
@@ -220,15 +232,15 @@ def mainloop(rayTrace=False, camera=None, output=None, preview_mode='SCANNER', u
 
         # Check if coords of plates changed, then reshare them
         if not rayTrace:
-            if reshare:
+            if app.reshare:
                 for c in rend_info['CAMERAS']:
                     c.glob_coords = {}
                 for p in rend_info['PLATES']:
                     p.share_coords()
-                reshare = False
+                app.reshare = False
 
             for c in rend_info['CAMERAS']:
-                if c.is_on or start:
+                if c.is_on or app.start:
                     # global camera constants
                     c.xrot_, c.yrot_, c.zrot_ = calc_matrixes(c.xangle, c.yangle, c.zangle)
 
@@ -303,51 +315,39 @@ def mainloop(rayTrace=False, camera=None, output=None, preview_mode='SCANNER', u
                                    font=('helvetica', round(width / 64), 'bold'), fill='white')
 
         # Reset mouse pos
-        if mouse_reset_pos_:
-            mouse.position = mouse_reset_pos_
-            px, py = mouse_reset_pos_
+        if app.mouse_reset_pos_:
+            mouse.position = app.mouse_reset_pos_
+            app.px, app.py = app.mouse_reset_pos_
 
     else:
         for window in rend_info['WINDOWS'].values():
             width = window[1].winfo_width()
             height = window[1].winfo_height()
-            window[1].create_text(width / 2, height / 2, anchor=CENTER, text=pause_text_,
-                                  font=('helvetica', 40, 'bold'), fill=pause_color_)
+            window[1].create_text(width / 2, height / 2, anchor=CENTER, text=app.pause_text_,
+                                  font=('helvetica', 40, 'bold'), fill=app.pause_color_)
 
-    if start:
-        start = False
+    if app.start:
+        app.start = False
 
     for window in rend_info['WINDOWS'].values():
         window[0].update()
-    time.sleep(sleep_time_)
-    fps += 1
+    time.sleep(app.sleep_time_)
+    app.fps += 1
 
-    cam_rot = False
+    app.cam_rot = False
 
 
 rend_info = {'PLATES': [], 'CAMERAS': [], 'LIGHTS': [], 'SPHERES': [], 'WINDOWS': {}}
 
 font = cv2.FONT_HERSHEY_TRIPLEX
 
-l_fps = 0
-fps = 0
-last_time = time.time()
-start = True
-reshare = False
-cam_rot = False
-
-mouse_reset_pos_ = (950, 540)
-pause_text_ = 'Renderer Paused'
-pause_color_ = 'gray10'
-
-pause = False
-reset = False
+app = App()
 
 from pynput.mouse import Controller as contr
 
 mouse = contr()
-mouse.position = mouse_reset_pos_
-px, py = mouse.position
+mouse.position = app.mouse_reset_pos_
+app.px, app.py = mouse.position
 
 from renderer.object_parent import object_parent
 from renderer.plate import Plate

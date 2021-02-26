@@ -99,7 +99,7 @@ set_variable(sleep_time=0, pause_color='gray70')
 import renderer.renderer as rn
 last_time = time.time()
 while True:
-    if not rn.pause:
+    if not rn.app.pause:
         # Let light rotate around cubes
         l.rotate(0, 5, 0, center=[0, 0, 8])
 
