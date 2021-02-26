@@ -38,15 +38,17 @@ class Light:
         self.yangle -= y_angle
         self.zangle -= z_angle
 
-        if (x_angle, y_angle, z_angle) != (0, 0, 0) and center != 'self':
-            if ((self.prev_xangle, self.prev_yangle, self.prev_zangle) != (x_angle, y_angle, z_angle)):
-                self.xrot, self.yrot, self.zrot = calc_matrixes(x_angle, y_angle, z_angle)
-                self.prev_xangle, self.prev_yangle, self.prev_zangle = x_angle, y_angle, z_angle
+        if (x_angle, y_angle, z_angle) == (0, 0, 0) and center == 'self':
+            return
 
-            center = [self.x, self.y, self.z] if center == 'self' else center
-            self.x, self.y, self.z = rotate([self.x, self.y, self.z], self.xrot, self.yrot, self.zrot, center=np.array([center[0],
-                                                                                            -center[1],
-                                                                                            center[2]]))
+        if (self.prev_xangle, self.prev_yangle, self.prev_zangle) != (x_angle, y_angle, z_angle):
+            self.xrot, self.yrot, self.zrot = calc_matrixes(x_angle, y_angle, z_angle)
+            self.prev_xangle, self.prev_yangle, self.prev_zangle = x_angle, y_angle, z_angle
+
+        center = [self.x, self.y, self.z] if center == 'self' else center
+        self.x, self.y, self.z = rotate([self.x, self.y, self.z], self.xrot, self.yrot, self.zrot, center=np.array([center[0],
+                                                                                        -center[1],
+                                                                                        center[2]]))
 
     def delete(self):
         del rend_info['LIGHTS'][rend_info['LIGHTS'].index(self)]

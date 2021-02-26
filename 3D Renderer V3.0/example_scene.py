@@ -47,16 +47,17 @@ for x in range(size):
             rotating.append(cube)
 
 # Examples of objects
-# p = Plate([(4, -1, 0), (6, 1, 0), (6, -1, 4)], texture=None, fill='red', smart_coords=False, orientation=1)
-# Plate([(-1, -1, 0), (1, 1, 0)], texture=None, fill='blue', smart_coords=True, orientation=1)
+# p = Plate([(4, -1, 0), (6, 1, 0), (6, -1, 4)], fill='red', smart_coords=False, orientation=1)
+# Plate([(-1, -1, 0), (1, 1, 0)], fill='blue', smart_coords=True, orientation=1)
 # Plate([(-15, -5, 15), (-5, 5, 15)],
-#       texture=r'C:\Users\manud\OneDrive\Bureaublad\test_img.jpg', resolution=0.025,
+#       texture=r'insert_path', resolution=0.01,
 #       fill=None, smart_coords=True, orientation=1)
 # Cube(5, 2, -2, size=1, fill=['red', 'black', 'green', 'blue', 'purple', 'yellow'])
 # Sphere(0, 0, 0, radius=0.5, fill='blue', outline='white', outline_thickness=2, shading=True)
 
 # 3D Model (only supports .STL)
-# m = Model(0, 0, -1, '3D Models/rabbit.stl', fill='white', size=0.01, alpha=100, z_angle=-90, y_angle=90, shading=True, recenter=True)
+# m = Model(0, 0, -1, '3D Models/rabbit.stl', fill='white', size=0.01, alpha=100,
+#           z_angle=-90, y_angle=90, shading=True, recenter=True)
 # m.x_rotation = random.randint(-5, 5)
 # m.y_rotation = random.randint(-5, 5)
 # m.z_rotation = random.randint(-5, 5)

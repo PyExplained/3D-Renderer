@@ -1,5 +1,6 @@
 from renderer.renderer import *
 
+
 class Camera:
     def __init__(self, x, y, z, resolution=(20, 20), fov=3):
         rend_info['CAMERAS'].append(self)
@@ -60,12 +61,13 @@ class Camera:
         self.yangle -= y_angle
         self.zangle -= z_angle
 
-        if (x_angle, y_angle, z_angle) != (0, 0, 0) and center != 'self':
-            if ((self.prev_xangle, self.prev_yangle, self.prev_zangle) != (x_angle, y_angle, z_angle)):
-                self.xrot, self.yrot, self.zrot = calc_matrixes(x_angle, y_angle, z_angle)
-                self.prev_xangle, self.prev_yangle, self.prev_zangle = x_angle, y_angle, z_angle
+        if (x_angle, y_angle, z_angle) == (0, 0, 0) or center == 'self':
+            return
 
-            self.x, self.y, self.z = rotate([self.x, self.y, self.z], self.xrot, self.yrot, self.zrot,
-                                            center=np.array([center[0],
-                                                             -center[1],
-                                                             center[2]]))
+        self.xrot, self.yrot, self.zrot = calc_matrixes(x_angle, y_angle, z_angle)
+        self.prev_xangle, self.prev_yangle, self.prev_zangle = x_angle, y_angle, z_angle
+
+        self.x, self.y, self.z = rotate([self.x, self.y, self.z], self.xrot, self.yrot, self.zrot,
+                                        center=np.array([center[0],
+                                                         -center[1],
+                                                         center[2]]))

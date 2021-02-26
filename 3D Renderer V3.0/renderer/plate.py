@@ -34,8 +34,11 @@ class Plate:
         if not self.alpha in [25, 50, 75, 100]:
             raise ValueError('Alpha value should be 25, 50, 75 or 100. Not ' + str(self.alpha))
 
-        self.prev_xangle, self.prev_yangle, self.prev_zangle = None, None, None
+        self.init_coords(co, texture, smart_coords, orientation, resolution)
 
+        self.share_coords()
+
+    def init_coords(self, co, texture, smart_coords, orientation, resolution):
         n_co = []
         for p in co:
             n_co.append((p[0], -p[1], p[2]))
@@ -44,59 +47,59 @@ class Plate:
         if not texture:
             rend_info['PLATES'].append(self)
 
+        self.co = co
         if smart_coords:
-            (self.x1, self.y1, self.z1), (self.x2, self.y2, self.z2) = co[0], co[1]
+            x1, y1, z1, x2, y2, z2 = co[0] + co[1]
             if smart_coords:
                 if orientation == 1:
-                    self.co = [(self.x2, self.y1, self.z2),
-                               (self.x2, self.y2, self.z2),
-                               (self.x1, self.y2, self.z1),
-                               (self.x1, self.y1, self.z1)]
+                    self.co = [(x2, y1, z2),
+                               (x2, y2, z2),
+                               (x1, y2, z1),
+                               (x1, y1, z1)]
                 elif orientation == 2:
-                    self.co = [(self.x1, self.y1, self.z2),
-                               (self.x2, self.y2, self.z2),
-                               (self.x2, self.y2, self.z1),
-                               (self.x1, self.y1, self.z1)]
-        else:
-            self.co = co
-        self.smart_coords = smart_coords
+                    self.co = [(x1, y1, z2),
+                               (x2, y2, z2),
+                               (x2, y2, z1),
+                               (x1, y1, z1)]
 
         if texture:
-            img = cv2.imread(texture)
-            step_size = round(1 / resolution)
-            if abs(self.y1 - self.y2) > 0 and abs(self.z1 - self.z2):
-                pix_dir = 'x'
-                pix_w = abs(self.z1 - self.z2) / len(img[0])
-                pix_h = abs(self.y1 - self.y2) / len(img)
-            elif abs(self.x1 - self.x2) > 0 and abs(self.z1 - self.z2):
-                pix_dir = 'y'
-                pix_w = abs(self.x1 - self.x2) / len(img[0])
-                pix_h = abs(self.z1 - self.z2) / len(img)
-            elif abs(self.x1 - self.x2) > 0 and abs(self.y1 - self.y2):
-                pix_dir = 'z'
-                pix_w = abs(self.x1 - self.x2) / len(img[0])
-                pix_h = abs(self.y1 - self.y2) / len(img)
-            self.y1 *= -1
-            for c1 in range(0, len(img), step_size):
-                for c2 in range(0, len(img[0]), step_size):
-                    b, g, r = img[len(img) - c1 - 1][c2]
-                    if pix_dir == 'x':
-                        Plate([(self.x1, self.y1 + c2 * pix_h, self.z1 + c1 * pix_w),
-                               (self.x1, self.y1 + c2 * pix_h + pix_h * step_size,
-                                self.z1 + c1 * pix_w + pix_w * step_size)],
-                              fill='#{:02x}{:02x}{:02x}'.format(r, g, b), smart_coords=True, orientation=orientation)
-                    elif pix_dir == 'y':
-                        Plate([(self.x1 + c1 * pix_w, self.y1, self.z1 + c2 * pix_h),
-                               (self.x1 + c1 * pix_w + pix_w * step_size, self.y1,
-                                self.z1 + c2 * pix_h + pix_h * step_size)],
-                              fill='#{:02x}{:02x}{:02x}'.format(r, g, b), smart_coords=True, orientation=orientation)
-                    elif pix_dir == 'z':
-                        Plate([(self.x1 + c2 * pix_w, self.y1 + c1 * pix_h, self.z1),
-                               (self.x1 + c2 * pix_w + pix_w * step_size, self.y1 + c1 * pix_h + pix_h * step_size,
-                                self.z1)],
-                              fill='#{:02x}{:02x}{:02x}'.format(r, g, b), smart_coords=True, orientation=orientation)
+            self.init_texture(texture, resolution, orientation, co)
 
-        self.share_coords()
+    def init_texture(self, texture, resolution, orientation, *co):
+        x1, y1, z1, x2, y2, z2 = co[0][0] + co[0][1]
+        img = cv2.imread(texture)
+        step_size = round(1 / resolution)
+        if abs(y1 - y2) > 0 and abs(z1 - z2):
+            pix_dir = 'x'
+            pix_w = abs(z1 - z2) / len(img[0])
+            pix_h = abs(y1 - y2) / len(img)
+        elif abs(x1 - x2) > 0 and abs(z1 - z2):
+            pix_dir = 'y'
+            pix_w = abs(x1 - x2) / len(img[0])
+            pix_h = abs(z1 - z2) / len(img)
+        elif abs(x1 - x2) > 0 and abs(y1 - y2):
+            pix_dir = 'z'
+            pix_w = abs(x1 - x2) / len(img[0])
+            pix_h = abs(y1 - y2) / len(img)
+        y1 *= -1
+        for c1 in range(0, len(img), step_size):
+            for c2 in range(0, len(img[0]), step_size):
+                b, g, r = img[len(img) - c1 - 1][c2]
+                if pix_dir == 'x':
+                    Plate([(x1, y1 + c2 * pix_h, z1 + c1 * pix_w),
+                           (x1, y1 + c2 * pix_h + pix_h * step_size,
+                            z1 + c1 * pix_w + pix_w * step_size)],
+                          fill='#{:02x}{:02x}{:02x}'.format(r, g, b), smart_coords=True, orientation=orientation)
+                elif pix_dir == 'y':
+                    Plate([(x1 + c1 * pix_w, y1, z1 + c2 * pix_h),
+                           (x1 + c1 * pix_w + pix_w * step_size, y1,
+                            z1 + c2 * pix_h + pix_h * step_size)],
+                          fill='#{:02x}{:02x}{:02x}'.format(r, g, b), smart_coords=True, orientation=orientation)
+                elif pix_dir == 'z':
+                    Plate([(x1 + c2 * pix_w, y1 + c1 * pix_h, z1),
+                           (x1 + c2 * pix_w + pix_w * step_size, y1 + c1 * pix_h + pix_h * step_size,
+                            z1)],
+                          fill='#{:02x}{:02x}{:02x}'.format(r, g, b), smart_coords=True, orientation=orientation)
 
     def update(self, camera):
         res = []
@@ -191,25 +194,27 @@ class Plate:
             self.co[i] = tuple(np.array([x, y, z]) + np.array(self.co[i]))
         rn.reshare = True
 
-    def rotate(self, x_angle, y_angle, z_angle, center, xrot, yrot, zrot):
+    def rotate(self, x_angle, y_angle, z_angle, center, *rot):
+        if rot:
+            self.xrot, self.yrot, self.zrot = rot
+        else:
+            self.xrot, self.yrot, self.zrot = calc_matrixes(x_angle, y_angle, z_angle)
+
+        if center == 'self':
+            center = np.mean(self.co, axis=0)
+
         self.xangle -= x_angle
         self.yangle -= y_angle
         self.zangle -= z_angle
 
-        if (x_angle, y_angle, z_angle) != (0, 0, 0):
-            if np.all(xrot == None) and np.all(xrot == None) and np.all(xrot == None) and \
-                    ((self.prev_xangle, self.prev_yangle, self.prev_zangle) != (x_angle, y_angle, z_angle)):
-                self.xrot, self.yrot, self.zrot = calc_matrixes(x_angle, y_angle, z_angle)
-                self.prev_xangle, self.prev_yangle, self.prev_zangle = x_angle, y_angle, z_angle
+        if (x_angle, y_angle, z_angle) == (0, 0, 0):
+            return
 
-            elif not (np.all(xrot == None) and np.all(xrot == None) and np.all(xrot == None)):
-                self.xrot, self.yrot, self.zrot = xrot, yrot, zrot
-
-            for i, p in enumerate(self.co):
-                self.co[i] = tuple(rotate(p, self.xrot, self.yrot, self.zrot, center=np.array([center[0],
-                                                                                               -center[1],
-                                                                                               center[2]])))
-            rn.reshare = True
+        for i, p in enumerate(self.co):
+            self.co[i] = tuple(rotate(p, self.xrot, self.yrot, self.zrot, center=np.array([center[0],
+                                                                                           -center[1],
+                                                                                           center[2]])))
+        rn.reshare = True
 
     def find_intersection(self, rayDirection, rayPoint, max_distance, record_distance, _):
         point = linePlaneIntersection(self.planeNormal, self.co[0], rayDirection, rayPoint)
