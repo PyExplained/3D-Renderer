@@ -50,17 +50,16 @@ class Plate:
         self.co = co
         if smart_coords:
             x1, y1, z1, x2, y2, z2 = co[0] + co[1]
-            if smart_coords:
-                if orientation == 1:
-                    self.co = [(x2, y1, z2),
-                               (x2, y2, z2),
-                               (x1, y2, z1),
-                               (x1, y1, z1)]
-                elif orientation == 2:
-                    self.co = [(x1, y1, z2),
-                               (x2, y2, z2),
-                               (x2, y2, z1),
-                               (x1, y1, z1)]
+            if orientation == 1:
+                self.co = [(x2, y1, z2),
+                           (x2, y2, z2),
+                           (x1, y2, z1),
+                           (x1, y1, z1)]
+            elif orientation == 2:
+                self.co = [(x1, y1, z2),
+                           (x2, y2, z2),
+                           (x2, y2, z1),
+                           (x1, y1, z1)]
 
         if texture:
             self.init_texture(texture, resolution, orientation, co)

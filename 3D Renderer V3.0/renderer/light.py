@@ -38,7 +38,7 @@ class Light:
         self.yangle -= y_angle
         self.zangle -= z_angle
 
-        if (x_angle, y_angle, z_angle) == (0, 0, 0) and center == 'self':
+        if (x_angle, y_angle, z_angle) == (0, 0, 0) or center == 'self':
             return
 
         if (self.prev_xangle, self.prev_yangle, self.prev_zangle) != (x_angle, y_angle, z_angle):
