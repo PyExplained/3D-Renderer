@@ -137,7 +137,7 @@ class Plate:
 
     def init_draw(self, camera, co1, co2, dr):
         if dr:
-            if type(self.fill) == str and self.shading:
+            if type(self.fill) == str:
                 self.fill = color2rgb(self.fill)
 
             if type(self.fill) in [list, tuple, np.ndarray]:
