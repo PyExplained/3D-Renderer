@@ -14,6 +14,7 @@ here is the distinction made clear:
 - **The raytracer** was originally meant as an 'addition', while now actually being a major feature. 
     It isn't realtime by any means, so you have to use it like rendering a picture in 3D-software.  
     This is a little preview of what it can do: <https://www.youtube.com/watch?v=50bsIIsnKrI>
+    Later on, I also made a video in which I explain how it works: <https://youtu.be/WWJgrftx6MQ>.
 
 In the examples scene, you can find examples of what you can do using the basic renderer and 
 you can find raytracing examples in the other scenes. To start raytracing, you can just press 'b'.
