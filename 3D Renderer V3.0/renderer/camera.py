@@ -49,7 +49,7 @@ class Camera:
             return np.full((height, width, 3), 255)
         else:
             self.frame = np.full((height, width, 3), 255)
-            self.frame_filled_in = np.zeros((height, width), dtype=np.bool)
+            self.frame_filled_in = np.zeros((height, width), dtype="bool")
 
     def move(self, x, y, z):
         self.x += x
