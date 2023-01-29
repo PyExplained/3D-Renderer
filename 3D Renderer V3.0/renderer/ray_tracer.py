@@ -278,7 +278,8 @@ def create_photo(canvas, camera, display=False, frame=None, resize=True):
     image = PIL.Image.fromarray(frame.astype(np.uint8))
     tk = rend_info['WINDOWS'][camera.displaying][1]
     if resize:
-        camera.photo = PIL.ImageTk.PhotoImage(image=image.resize((canvas.winfo_width(), canvas.winfo_height())), master=tk)
+        camera.photo = PIL.ImageTk.PhotoImage(image=image.resize((canvas.winfo_width(), canvas.winfo_height()),
+                                                                 resample=PIL.Image.BOX), master=tk)
     else:
         camera.photo = PIL.ImageTk.PhotoImage(image=image, master=tk)
 
